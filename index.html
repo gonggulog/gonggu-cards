@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>공구로그</title>
+<style>
+ :root{--bg:#F5F3EC;--ink:#12331F;--sub:#5C6A61;--green:#1E7A45;--line:#DCD8CC}
+ @media (prefers-color-scheme:dark){:root{--bg:#12331F;--ink:#F5F3EC;--sub:#A8B5AC;--green:#B7E56B;--line:#2A4534}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);min-height:100vh;
+      display:flex;align-items:center;justify-content:center;padding:16px;
+      font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',system-ui,sans-serif;
+      line-height:1.6;word-break:keep-all}
+ main{max-width:560px;width:100%}
+ h1{font-size:28px;margin:0 0 4px;letter-spacing:-.5px}
+ p.sub{color:var(--sub);margin:0 0 28px;font-size:15px}
+ .box{border:2px solid var(--green);border-radius:14px;padding:20px;margin-top:8px}
+ .lab{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.02em}
+ code{display:block;margin-top:10px;font-size:14px;word-break:break-all;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+ button{margin-top:14px;font:inherit;font-size:14px;font-weight:600;padding:9px 18px;
+        border-radius:9px;cursor:pointer;border:2px solid var(--green);
+        background:transparent;color:var(--green)}
+ .hide{display:none}
+</style></head>
+<body><main>
+ <h1>공구로그</h1>
+ <p class="sub">육아 공동구매 일정을 매일 아침 정리합니다. &middot; <a href="https://www.instagram.com/gonggu_log/" style="color:var(--green)">@gonggu_log</a></p>
+ <div id="box" class="box hide">
+   <div class="lab">인증 코드</div>
+   <code id="code"></code>
+   <button id="cp" type="button">복사</button>
+ </div>
+</main>
+<script>
+ var m = location.search.match(/[?&]code=([^&#]+)/);
+ if (m) {
+   var c = decodeURIComponent(m[1]).replace(/#_$/, "");
+   document.getElementById("code").textContent = c;
+   document.getElementById("box").classList.remove("hide");
+   document.getElementById("cp").addEventListener("click", function () {
+     var b = this;
+     navigator.clipboard.writeText(c).then(function(){ b.textContent = "복사됨"; },
+       function(){ b.textContent = "길게 눌러 선택"; });
+   });
+ }
+</script>
+</body></html>
