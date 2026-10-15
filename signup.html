@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>공구로그 · 공구 알림 신청</title>
+<meta name="robots" content="noindex">
+<style>
+ :root{--bg:#F5F3EC;--card:#FFFFFF;--ink:#12331F;--sub:#5C6A61;--line:#DFDBCF;--green:#1E7A45;--soft:#E9F1EA;--warn:#A8410F}
+ @media (prefers-color-scheme:dark){:root{--bg:#1C2922;--card:#2E3D34;--ink:#F0F4EE;--sub:#AEBFB3;--line:#465A4E;--green:#AFE2C1;--soft:#3A4E42;--warn:#F3B98C}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);word-break:keep-all;line-height:1.6;
+      font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard',system-ui,'Noto Sans KR',sans-serif}
+ .wrap{max-width:560px;margin:0 auto;padding:24px 16px 48px}
+ h1{font-size:21px;margin:0} .sub{color:var(--sub);font-size:13.5px;margin:4px 0 0}
+ h2{font-size:15px;margin:22px 0 8px}
+ ul.picks{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+ ul.picks li{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-weight:600}
+ ul.picks li span{flex:1;min-width:0}
+ ul.picks button{font:inherit;font-size:12.5px;border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:7px;padding:3px 8px}
+ input[type=text]{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+ label.ck{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-top:7px;font-size:14px}
+ label.ck input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--green)}
+ label.ck small{display:block;color:var(--sub);font-size:12.5px;margin-top:2px}
+ .go{display:block;width:100%;margin-top:18px;font:inherit;font-size:16px;font-weight:800;padding:13px;border:0;border-radius:12px;background:var(--green);color:var(--bg)}
+ .go:disabled{opacity:.5}
+ .err{color:var(--warn);font-size:13.5px;margin:10px 0 0}
+ .no{font-size:42px;font-weight:800;letter-spacing:4px;text-align:center;background:var(--card);border:2px solid var(--green);border-radius:14px;padding:12px;margin:12px 0}
+ .steps{padding-left:20px} .steps li{margin:6px 0;font-size:14.5px}
+ a{color:var(--green);font-weight:700}
+ .btn2{display:block;text-align:center;margin-top:10px;padding:12px;border-radius:12px;border:2px solid var(--green);text-decoration:none}
+ code{font-size:15px;font-weight:800}
+ .must{margin-top:14px;background:var(--soft);border-radius:12px;padding:12px 12px 4px;font-size:14px}
+ .hide{display:none}
+</style></head>
+<body><div class="wrap">
+<div id="formbox">
+ <h1>공구 알림 신청</h1>
+ <p class="sub">고른 상품의 공구가 새로 잡히거나 오픈하는 날, 인스타그램 DM 으로 알려 드려요.</p>
+
+ <h2>알림 받을 상품 <span class="sub" id="cnt"></span></h2>
+ <ul class="picks" id="picks"></ul>
+ <p class="sub" id="nopick">링크인바이오에서 상품 옆 [알림]을 눌러 고를 수 있어요. 공구한 적 없는 상품은 아래에 적어 주세요.</p>
+
+ <h2>찾는 상품 <span class="sub">(선택)</span></h2>
+ <input type="text" id="req" maxlength="60" placeholder="예: 코니 아기띠 여름용">
+ <p class="sub">공구한 적 없는 상품도 똑같이 신청하면 끝이에요. 브랜드와 상품명을 함께 적으면 정확해요. 공구로그가 모으는 셀러가 그 상품 공구를 열 때 알림이 가요.</p>
+
+ <h2>동의 <span class="sub">(모두 필요)</span></h2>
+ <label class="ck"><input type="checkbox" id="ad"><span><b>[필수] 광고성 정보 수신 동의</b>
+   <small>고른 상품의 공동구매 소식(광고)을 인스타그램 DM·댓글 답글로 받습니다. 언제든 DM <b>알림 그만</b>으로 끌 수 있어요.</small></span></label>
+ <label class="ck"><input type="checkbox" id="privacy"><span><b>[필수] 개인정보 수집·이용 동의</b>
+   <small>항목: 신청 번호·고른 상품·인스타그램 계정 식별자·사용자 이름·댓글/DM 내용 · 목적: 신청 확인과 알림 · 보유: 알림을 끄면 즉시, 최대 6개월 ·
+   국외 이전: Google(미국, 신청 정보 저장)·Meta(미국, 메시지 전달). <a href="privacy.html">처리방침 전문</a></small></span></label>
+ <label class="ck"><input type="checkbox" id="age14"><span><b>[필수] 만 14세 이상입니다</b></span></label>
+
+ <button class="go" id="go" type="button">신청 번호 받기</button>
+ <p class="err" id="err"></p>
+</div>
+
+<div id="donebox" class="hide">
+ <h1>거의 다 됐어요!</h1>
+ <p class="sub">아래 <b>번호 네 자리만</b> 인스타그램 고정 게시물에 댓글로 남기면 신청이 끝나요.</p>
+ <div class="no" id="no"></div>
+ <ol class="steps">
+  <li>아래 버튼으로 공구로그의 <b>'공구 알림 신청'</b> 고정 게시물을 엽니다</li>
+  <li>댓글에 번호 <code id="cmt"></code> 만 적어 올립니다 (다른 말은 없어도 돼요)</li>
+  <li>확인되면 그 댓글에 답글이 달려요(1시간 안)</li>
+ </ol>
+ <div class="must">
+  <b>알림을 놓치지 않으려면 꼭 해 주세요</b>
+  <ol class="steps">
+   <li><b>@gonggu_log 팔로우</b> — 안 하면 DM 이 '메시지 요청함'으로 가요</li>
+   <li>인스타 설정 → 알림 → <b>댓글 답글·메시지 알림 켜기</b></li>
+   <li>신청 <b>7일 안</b>에는 공구가 잡히면 DM 으로 바로 알려 드려요. <b>7일이 지나면</b> 인스타 정책상 먼저 DM 을 못 보내서
+       신청 댓글에 <b>"소식 있어요"</b> 답글을 달아요 → 공구로그에 DM 으로 <b>알림</b>이라고 보내 주시면 바로 자세히 알려 드려요</li>
+  </ol>
+ </div>
+ <a class="go" id="post" href="https://www.instagram.com/gonggu_log/" style="text-align:center;text-decoration:none">고정 게시물 열기</a>
+ <a class="btn2" id="copy" href="#">번호 복사</a>
+ <p class="sub">48시간 안에 댓글이 없으면 신청은 지워져요. 상품을 더하려면 링크인바이오에서 골라 새 번호를 받으세요.</p>
+</div>
+<p class="sub" style="margin-top:28px"><a href="./">← 링크인바이오</a></p>
+</div>
+<script>
+// 신청 처리는 Apps Script(doPost)가 한다. 화면은 GitHub Pages 에 두어 구글 다중 로그인·iframe 오류를 피한다(10-15).
+var API = "https://script.google.com/macros/s/AKfycbwf3wmqbEvQZWdspm0tzzEodmeP9hcjUxG4Ui8vyg8i7w3k9DHpR7mSKV_2nLD2KO30/exec";
+function $(id){ return document.getElementById(id); }
+function parseItems(raw){       // Logic.gs parseItems 와 같은 규칙(서버가 다시 검사한다)
+  var arr; try { arr = JSON.parse(raw || "[]"); } catch (e) { return []; }
+  if (!Array.isArray(arr)) return [];
+  var out = [], seen = {};
+  for (var i = 0; i < arr.length && out.length < 5; i++) {
+    var x = arr[i] || {}, s = String(x.s || "").slice(0, 40),
+        t = String(x.t || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!/^[a-z-]+:[A-Za-z0-9_-]+$/.test(s) || !t || seen[s]) continue;
+    seen[s] = 1; out.push({s: s, t: t});
+  }
+  return out;
+}
+var qs = new URLSearchParams(location.search);
+var items = parseItems(qs.get("p"));
+$("req").value = (qs.get("req") || "").replace(/[<>]/g, "").slice(0, 60);
+function draw(){
+  var ul = $("picks"); ul.innerHTML = "";
+  items.forEach(function(it, i){
+    var li = document.createElement("li"), sp = document.createElement("span"), b = document.createElement("button");
+    sp.textContent = it.t; b.type = "button"; b.textContent = "빼기";
+    b.onclick = function(){ items.splice(i, 1); draw(); };
+    li.appendChild(sp); li.appendChild(b); ul.appendChild(li);
+  });
+  $("cnt").textContent = items.length ? items.length + "개" : "";
+  $("nopick").classList.toggle("hide", items.length > 0);
+}
+draw();
+$("go").onclick = function(){
+  var f = {items: items, req: $("req").value, ad: $("ad").checked, privacy: $("privacy").checked, age14: $("age14").checked};
+  $("go").disabled = true; $("err").textContent = "";
+  fetch(API, {method: "POST", body: JSON.stringify(f), credentials: "omit", redirect: "follow"})
+    .then(function(res){ return res.json(); })
+    .then(function(r){
+    $("go").disabled = false;
+    if (!r.ok) { $("err").innerHTML = r.errors.map(function(e){ return e.replace(/</g, "&lt;"); }).join("<br>"); return; }
+    var txt = String(r.no);
+    $("no").textContent = r.no; $("cmt").textContent = txt;
+    $("formbox").classList.add("hide"); $("donebox").classList.remove("hide");
+    $("copy").onclick = function(e){
+      e.preventDefault();
+      var ok = function(){ $("copy").textContent = "복사됨 — 댓글에 붙여넣기"; };
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, function(){ $("copy").textContent = "번호를 직접 적어 주세요: " + txt; });
+      else $("copy").textContent = "번호를 직접 적어 주세요: " + txt;
+    };
+    })
+    .catch(function(){
+      $("go").disabled = false; $("err").textContent = "잠시 문제가 생겼어요. 다시 눌러 주세요.";
+    });
+};
+</script>
+</body></html>
