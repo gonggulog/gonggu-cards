@@ -124,10 +124,13 @@ for (var i = 0; i < ones.length; i++) ones[i].onchange = function(){
 };
 $("go").onclick = function(){
   var f = {items: items, req: $("req").value, ad: $("ad").checked, privacy: $("privacy").checked, age14: $("age14").checked};
-  $("go").disabled = true; $("err").textContent = "";
-  fetch(API, {method: "POST", body: JSON.stringify(f), credentials: "omit", redirect: "follow"})
+  $("go").disabled = true; $("err").textContent = ""; $("go").textContent = "보내는 중… (최대 10초쯤 걸려요)";
+  var ctl = window.AbortController ? new AbortController() : null;
+  var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 30000);
+  fetch(API, {method: "POST", body: JSON.stringify(f), credentials: "omit", redirect: "follow", signal: ctl ? ctl.signal : undefined})
     .then(function(res){ return res.json(); })
     .then(function(r){
+    clearTimeout(timer); $("go").textContent = "신청 번호 받기";
     $("go").disabled = false;
     if (!r.ok) { $("err").innerHTML = r.errors.map(function(e){ return e.replace(/</g, "&lt;"); }).join("<br>"); return; }
     var txt = String(r.no);
@@ -141,7 +144,9 @@ $("go").onclick = function(){
     };
     })
     .catch(function(){
-      $("go").disabled = false; $("err").textContent = "잠시 문제가 생겼어요. 다시 눌러 주세요.";
+      clearTimeout(timer); $("go").textContent = "신청 번호 받기";
+      $("go").disabled = false;
+      $("err").textContent = "연결이 안 됐어요. 다시 눌러 주세요. 계속 안 되면 사파리·크롬 같은 브라우저에서 이 페이지를 열어 주세요.";
     });
 };
 </script>
